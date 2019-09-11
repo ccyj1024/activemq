@@ -10,7 +10,28 @@ import javax.jms.*;
  */
 public class JMSProduce_Topic
 {
-    public static final String MQ_URL = "tcp://192.168.111.142:61616";
+	public static final String MQ_URL_STRING="tcp://192.168.10.17:61616";
+	public static final String MYMQ="MQ_666";
+	
+	public static void main(String[] args) throws Exception {
+		ActiveMQConnectionFactory activeMQConnectionFactory = new ActiveMQConnectionFactory(MQ_URL_STRING);
+		Connection connection = activeMQConnectionFactory.createConnection();
+		connection.start();
+		Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
+		Topic topic = session.createTopic(MYMQ);
+		MessageProducer messageProducer = session.createProducer(topic);
+		for (int i = 1; i < 4; i++) {
+			TextMessage message = session.createTextMessage("msg---" + i);
+			messageProducer.send(message);
+		}
+		messageProducer.close();
+		session.close();
+		connection.close();
+		System.out.println("========== it's ok !");
+		
+	}
+	
+  /*  public static final String MQ_URL = "tcp://192.168.111.142:61616";
     public static final String MyTOPIC = "topic0508";
 
     public static void main(String[] args) throws JMSException
@@ -46,5 +67,5 @@ public class JMSProduce_Topic
         System.out.println("*****run is ok");
 
 
-    }
+    }*/
 }

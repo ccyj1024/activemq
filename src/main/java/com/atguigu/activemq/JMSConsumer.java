@@ -2,6 +2,8 @@ package com.atguigu.activemq;
 
 import org.apache.activemq.ActiveMQConnectionFactory;
 
+import static org.hamcrest.CoreMatchers.nullValue;
+
 import javax.jms.*;
 
 /**
@@ -10,13 +12,31 @@ import javax.jms.*;
  */
 public class JMSConsumer
 {
-    public static final String MQ_URL = "tcp://192.168.111.142:61616";
+    public static final String MQ_URL = "tcp://192.168.10.17:61616";
     public static final String MyQUEUE = "queue0508";
 
     public static void main(String[] args) throws JMSException
     {
+    	ActiveMQConnectionFactory activeMQConnectionFactory = new ActiveMQConnectionFactory(MQ_URL);
+    	Connection connection = activeMQConnectionFactory.createConnection();
+    	connection.start();
+    	Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
+    	Queue queue = session.createQueue(MyQUEUE);
+    	MessageConsumer messageConsumer = session.createConsumer(queue);
+    	TextMessage textMessage = null;
+    	while(true) {
+    		textMessage = (TextMessage) messageConsumer.receive();
+    		if(textMessage != null) {
+    			System.out.println("****收到的消息："+textMessage.getText());
+    		}else {
+				break;
+			}
+    	}
+    	messageConsumer.close();
+    	session.close();
+    	connection.close();
 
-        ActiveMQConnectionFactory activeMQConnectionFactory = new ActiveMQConnectionFactory(MQ_URL);
+     /*   ActiveMQConnectionFactory activeMQConnectionFactory = new ActiveMQConnectionFactory(MQ_URL);
 
         Connection connection = activeMQConnectionFactory.createConnection();
         connection.start();
@@ -27,9 +47,9 @@ public class JMSConsumer
         MessageConsumer messageConsumer = session.createConsumer(queue);
 
 
-       /*同步阻塞方式receive() ，订阅者或接收者调用MessageConsumer的receive()方法来接收消息，
+       同步阻塞方式receive() ，订阅者或接收者调用MessageConsumer的receive()方法来接收消息，
         receive()将一直阻塞
-        receive(long timeout) 按照给定的时间阻塞，到时间自动退出*/
+        receive(long timeout) 按照给定的时间阻塞，到时间自动退出
         TextMessage textMessage = null;
         while(true)
         {
@@ -47,7 +67,7 @@ public class JMSConsumer
         messageConsumer.close();
 
         session.close();
-        connection.close();
+        connection.close();*/
 
 
 
